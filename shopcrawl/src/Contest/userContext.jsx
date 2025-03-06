@@ -3,12 +3,12 @@ import Swal from "sweetalert2";
 
 // API Endpoints (Centralized for easy maintenance)
 const API_ENDPOINTS = {
-  LOGIN: "https://shopcrawlbackend.onrender.com/login",
-  REGISTER: "https://shopcrawlbackend.onrender.com/register",
-  FETCH_USER: "https://shopcrawlbackend.onrender.com/me",
-  SAVE_SEARCH: "https://shopcrawlbackend.onrender.com/save-search",
-  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend.onrender.com/search-history",
-  DELETE_SEARCH: "https://shopcrawlbackend.onrender.com/delete-search",
+  LOGIN: "https://shopcrawlbackend-2.onrender.com/login",
+  REGISTER: "https://shopcrawlbackend-2.onrender.com/register",
+  FETCH_USER: "https://shopcrawlbackend-2.onrender.com/me",
+  SAVE_SEARCH: "https://shopcrawlbackend-2.onrender.com/save-search",
+  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/search-history",
+  DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search",
 };
 
 export const UserContext = createContext();
@@ -52,7 +52,7 @@ export const UserProvider = ({ children }) => {
   // LOGIN WITH GOOGLE
   const login_with_google = (email) => {
    
-    fetch("https://shopcrawlbackend.onrender.com/login_with_google", {
+    fetch("https://shopcrawlbackend-2.onrender.com/login_with_google", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -70,7 +70,7 @@ export const UserProvider = ({ children }) => {
           sessionStorage.setItem("token", response.access_token);
           setToken(response.access_token);
 
-          fetch("http://127.0.0.1:5000/current_user", {
+          fetch("https://shopcrawlbackend-2.onrender.com/current_user", {
             method: "GET",
             headers: {
               "Content-type": "application/json",

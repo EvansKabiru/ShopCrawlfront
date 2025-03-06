@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://shopcrawlbackend.onrender.com/api"; // Your Flask backend
+const API_URL = "http://127.0.0.1:5000/api"; // Your Flask backend
 
 const fetchJumiaProducts = async () => {
   try {

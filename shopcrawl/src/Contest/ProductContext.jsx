@@ -15,7 +15,7 @@ export const ProductProvider = ({ children }) => {
   const fetchProducts = async () => {
     try {
       const response = await fetch(
-        "https://shopcrawlbackend.onrender.com/products"
+        "https://shopcrawlbackend-2.onrender.com/products"
       );
       if (!response.ok) throw new Error("Failed to fetch products");
       const data = await response.json();
@@ -48,7 +48,7 @@ export const ProductProvider = ({ children }) => {
 
   const createProduct = async (productData, token) => {
     try {
-      const response = await fetch("https://shopcrawlbackend.onrender.com/products", {
+      const response = await fetch("https://shopcrawlbackend-2.onrender.com/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +68,7 @@ export const ProductProvider = ({ children }) => {
 
   const deleteProduct = async (id, token) => {
     try {
-      const response = await fetch(`https://shopcrawlbackend.onrender.com/products/${id}`, {
+      const response = await fetch(`https://shopcrawlbackend-2.onrender.com/products/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
