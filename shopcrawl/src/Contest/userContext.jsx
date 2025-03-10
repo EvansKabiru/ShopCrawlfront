@@ -50,49 +50,53 @@ export const UserProvider = ({ children }) => {
   };
 
   // LOGIN WITH GOOGLE
-  const login_with_google = (email) => {
-   
-    fetch("https://shopcrawlbackend-2.onrender.com/login_with_google", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-      }),
-    })
-      .then((resp) => resp.json())
-      .then((response) => {
-        console.log("mkjhg");
-        
-        if (response.access_token) {
-          
-          sessionStorage.setItem("token", response.access_token);
-          setToken(response.access_token);
+const login_with_google = (idToken) => {
+  fetch("https://shopcrawlbackend-2.onrender.com/login_with_google", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({
+      token: idToken,  // Send the ID token here
+    }),
+  })
+    .then((resp) => resp.json())
+    .then((response) => {
+      if (response.access_token) {
+        sessionStorage.setItem("token", response.access_token); // Save token in sessionStorage
+        setToken(response.access_token); // Update token state
 
-          fetch("https://shopcrawlbackend-2.onrender.com/current_user", {
-            method: "GET",
-            headers: {
-              "Content-type": "application/json",
-              Authorization: `Bearer ${response.access_token}`,
-            },
+        // Now fetch the user data from the '/me' route
+        fetch(API_ENDPOINTS.FETCH_USER, {  // Correct endpoint for current user
+          method: "GET",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${response.access_token}`, // Pass the access token
+          },
+        })
+          .then((response) => response.json())
+          .then((response) => {
+            if (response.email) {
+              setUser(response);  // Set the user data in state
+            } else {
+              Swal.fire("Error", "Could not fetch user details.", "error");
+            }
           })
-            .then((response) => response.json())
-            .then((response) => {
-              if (response.email) {
-                setCurrentUser(response);
-              }
-            });
+          .catch((error) => {
+            console.error("Error fetching current user:", error);
+            Swal.fire("Error", "Failed to fetch user data.", "error");
+          });
+      } else {
+        Swal.fire("Error", "Google login failed.", "error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error in Google login:", error);
+      Swal.fire("Error", "Something went wrong during Google login.", "error");
+    });
+};
 
-         
-        } else if (response.error) {
-         
-         
-        } else {
-         
-        }
-      });
-  };
+  
 
   // Function to handle user registration
   const register = async (userData) => {
