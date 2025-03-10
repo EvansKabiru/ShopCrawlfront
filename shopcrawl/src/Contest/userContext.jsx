@@ -51,7 +51,7 @@ export const UserProvider = ({ children }) => {
 
   // LOGIN WITH GOOGLE
 const login_with_google = (idToken) => {
-  fetch("https://shopcrawlbackend-2.onrender.com/login_with_google", {
+  fetch("https://shopcrawlbackend-2.onrender.com/google_login/callback", {
     method: "POST",
     headers: {
       "Content-type": "application/json",
