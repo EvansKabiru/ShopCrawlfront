@@ -7,7 +7,7 @@ const API_ENDPOINTS = {
   REGISTER: "https://shopcrawlbackend-2.onrender.com/register",
   FETCH_USER: "https://shopcrawlbackend-2.onrender.com/me",
   SAVE_SEARCH: "https://shopcrawlbackend-2.onrender.com/save-search",
-  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches/{user_id}",
+  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches",
   DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search/{search_id}",
 };
 
