@@ -31,6 +31,15 @@ const HomePage = () => {
     return colors[index % colors.length]; // Cycle through the colors array
   };
 
+  // Function to handle image click and redirect to navigate_link
+  const handleImageClick = (navigateLink) => {
+    if (navigateLink) {
+      window.open(navigateLink, "_blank"); // Open link in a new tab
+    } else {
+      console.error("No navigation link provided for this product.");
+    }
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Products</h1>
@@ -40,16 +49,23 @@ const HomePage = () => {
           filteredProducts.map((product, index) => (
             <div
               key={product.id}
-              className={`border p-4 rounded-lg shadow-md cursor-pointer ${getColorClass(
+              className={`border p-4 rounded-lg shadow-md ${getColorClass(
                 index
               )}`}
-              onClick={() => setSelectedProduct(product)}
             >
-              <img
-                src={product.product_url}
-                alt={product.product_name}
-                className="w-full h-40 object-cover rounded-md"
-              />
+              {/* Responsive image acting as a button */}
+              <div
+                className="w-full h-40 overflow-hidden rounded-md cursor-pointer"
+                onClick={() => handleImageClick(product.navigate_link)} // Use navigate_link
+              >
+                <img
+                  src={product.product_url}
+                  alt={product.product_name}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              {/* Product details */}
               <div className="mt-2">
                 <p className="text-lg font-semibold">{product.product_name}</p>
                 <p className="text-lg font-semibold">
