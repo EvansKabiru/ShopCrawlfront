@@ -8,7 +8,7 @@ const API_ENDPOINTS = {
   FETCH_USER: "https://shopcrawlbackend-2.onrender.com/me",
   SAVE_SEARCH: "https://shopcrawlbackend-2.onrender.com/save-search",
   FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches/{user_id}",
-  DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search/{user_id}",
+  DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search/{search_id}",
 };
 
 export const UserContext = createContext();
@@ -204,10 +204,13 @@ const login_with_google = (idToken) => {
 
     setLoading(true);
     try {
-      const response = await fetch(API_ENDPOINTS.FETCH_SEARCH_HISTORY, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
+    const userId = user.id; // Ensure user.id exists
+    const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY.replace("{user_id}", userId);
+
+    const response = await fetch(searchHistoryUrl, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
         },
       });
 
@@ -247,15 +250,14 @@ const login_with_google = (idToken) => {
 
     setLoading(true);
     try {
-      const response = await fetch(
-        `${API_ENDPOINTS.DELETE_SEARCH}/${searchId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    const deleteUrl = API_ENDPOINTS.DELETE_SEARCH.replace("{search_id}", searchId);
+
+    const response = await fetch(deleteUrl, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
       const data = await response.json();
 
