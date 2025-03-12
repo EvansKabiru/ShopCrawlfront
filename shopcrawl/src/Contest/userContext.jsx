@@ -216,17 +216,17 @@ const login_with_google = (idToken) => {
   
       const data = await response.json();
   
-      console.log("Full Response Data:", data);  // ✅ Log full response
+      console.log("Full Response Data:", data); // ✅ Log full response
   
       if (response.ok) {
-        if (Array.isArray(data)) {
-          setSearchHistory(data); // ✅ Ensure it's an array before setting state
-        } else if (data.searches && Array.isArray(data.searches)) {
-          setSearchHistory(data.searches); // ✅ If data.searches exists and is an array
-        } else {
-          console.error("Unexpected response format:", data);
-          Swal.fire("Error", "Unexpected response format from server", "error");
-        }
+        // ✅ Extract the search history from the correct format
+        const extractedSearchHistory = Array.isArray(data) 
+          ? data 
+          : data.searches && Array.isArray(data.searches) 
+          ? data.searches 
+          : [];
+  
+        setSearchHistory(extractedSearchHistory);
       } else {
         Swal.fire("Error", data.error || "Failed to fetch search history", "error");
       }
@@ -238,7 +238,6 @@ const login_with_google = (idToken) => {
     }
   };
   
-
   // Function to delete a search history entry
   const deleteSearch = async (searchId) => {
     if (!user) {
