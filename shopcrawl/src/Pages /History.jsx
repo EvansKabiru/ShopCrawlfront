@@ -9,12 +9,7 @@ const History = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      fetchSearchHistory();
-    }
-  }, [user]);
-
+  
   // Fetch search history from the backend
   const fetchSearchHistory = async () => {
     setLoading(true);
@@ -47,6 +42,13 @@ const History = () => {
       setLoading(false);
     }
   };
+
+  //Now, useEffect has access to fetchSearchHistory
+  useEffect(() => {
+    if (user) {
+      fetchSearchHistory();
+    }
+  }, [user]);
 
   // Handle deleting a search history entry
   const handleDelete = async (searchId) => {
