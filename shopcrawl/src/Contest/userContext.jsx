@@ -201,41 +201,43 @@ const login_with_google = (idToken) => {
   // Function to fetch search history
   const fetchSearchHistory = async () => {
     if (!user) return;
-
+  
     setLoading(true);
     try {
-    const userId = user.id; // Ensure user.id exists
-    const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY.replace("{user_id}", userId);
-
-    const response = await fetch(searchHistoryUrl, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
+      const userId = user.id;
+      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY.replace("{user_id}", userId);
+  
+      const response = await fetch(searchHistoryUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
       });
-
+  
       const data = await response.json();
-
+  
+      console.log("Full Response Data:", data);  // ✅ Log full response
+  
       if (response.ok) {
-        setSearchHistory(data);
+        if (Array.isArray(data)) {
+          setSearchHistory(data); // ✅ Ensure it's an array before setting state
+        } else if (data.searches && Array.isArray(data.searches)) {
+          setSearchHistory(data.searches); // ✅ If data.searches exists and is an array
+        } else {
+          console.error("Unexpected response format:", data);
+          Swal.fire("Error", "Unexpected response format from server", "error");
+        }
       } else {
-        Swal.fire(
-          "Error",
-          data.error || "Failed to fetch search history",
-          "error"
-        );
+        Swal.fire("Error", data.error || "Failed to fetch search history", "error");
       }
     } catch (error) {
       console.error("Error fetching search history:", error);
-      Swal.fire(
-        "Error",
-        "Something went wrong while fetching search history.",
-        "error"
-      );
+      Swal.fire("Error", "Something went wrong while fetching search history.", "error");
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Function to delete a search history entry
   const deleteSearch = async (searchId) => {
