@@ -221,10 +221,18 @@ const login_with_google = (idToken) => {
             throw new Error(data.error || "Failed to fetch search history.");
         }
 
-        // ✅ Extract only the search history array
-        const searchHistoryArray = Array.isArray(data) ? data : []; 
+        // ✅ Fix: Extract only the array from API response
+        let searchHistoryArray = [];
 
-        setSearchHistory(searchHistoryArray); // ✅ Ensures it's always an array
+        if (Array.isArray(data)) {
+            searchHistoryArray = data;  // ✅ If response is an array, use it
+        } else if (typeof data === "object" && data.searches && Array.isArray(data.searches)) {
+            searchHistoryArray = data.searches;  // ✅ If response contains "searches", use that
+        } else {
+            console.error("Unexpected response format:", data);
+        }
+
+        setSearchHistory(searchHistoryArray); // ✅ Always ensures it's an array
 
     } catch (error) {
         console.error("Error fetching search history:", error);
