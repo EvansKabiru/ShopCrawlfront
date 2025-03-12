@@ -216,15 +216,11 @@ const login_with_google = (idToken) => {
   
       const data = await response.json();
   
-      console.log("Full Response Data:", data); // ✅ Log full response
+      console.log("Full Response Data:", data); // ✅ Debugging
   
       if (response.ok) {
-        // ✅ Extract the search history from the correct format
-        const extractedSearchHistory = Array.isArray(data) 
-          ? data 
-          : data.searches && Array.isArray(data.searches) 
-          ? data.searches 
-          : [];
+        // ✅ Ensure we only set an array in `setSearchHistory`
+        const extractedSearchHistory = Array.isArray(data.searches) ? data.searches : [];
   
         setSearchHistory(extractedSearchHistory);
       } else {
