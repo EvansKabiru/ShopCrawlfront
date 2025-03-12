@@ -215,17 +215,11 @@ const login_with_google = (idToken) => {
       });
   
       const data = await response.json();
-  
       console.log("Full Response Data:", data); // ✅ Log full response
   
       if (response.ok) {
-        // ✅ Extract the search history from the correct format
-        const extractedSearchHistory = Array.isArray(data) 
-          ? data 
-          : data.searches && Array.isArray(data.searches) 
-          ? data.searches 
-          : [];
-  
+        // ✅ Fix: Extract search history correctly
+        const extractedSearchHistory = Array.isArray(data.search_history) ? data.search_history : [];
         setSearchHistory(extractedSearchHistory);
       } else {
         Swal.fire("Error", data.error || "Failed to fetch search history", "error");
