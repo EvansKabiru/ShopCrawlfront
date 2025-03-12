@@ -199,49 +199,46 @@ const login_with_google = (idToken) => {
   };
 
   // Function to fetch search history
-  const fetchSearchHistory = async () => { 
+  const fetchSearchHistory = async () => {
     if (!user) return;
-
+  
     setLoading(true);
     try {
-        const userId = user.id;
-        const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY.replace("{user_id}", userId);
-
-        const response = await fetch(searchHistoryUrl, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        const data = await response.json();
-        console.log("Full Response Data:", data);
-
-        if (!response.ok) {
-            throw new Error(data.error || "Failed to fetch search history.");
-        }
-
-        // ✅ Fix: Extract only the array from API response
-        let searchHistoryArray = [];
-
-        if (Array.isArray(data)) {
-            searchHistoryArray = data;  // ✅ If response is an array, use it
-        } else if (typeof data === "object" && data.searches && Array.isArray(data.searches)) {
-            searchHistoryArray = data.searches;  // ✅ If response contains "searches", use that
-        } else {
-            console.error("Unexpected response format:", data);
-        }
-
-        setSearchHistory(searchHistoryArray); // ✅ Always ensures it's an array
-
+      const userId = user.id;
+      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY.replace("{user_id}", userId);
+  
+      const response = await fetch(searchHistoryUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      console.log("Response status:", response.status); // ✅ Log response status
+      const data = await response.json();
+      console.log("Full Response Data:", data); // ✅ Log full response
+  
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch search history.");
+      }
+  
+      // ✅ Ensure data is an array before setting state
+      if (Array.isArray(data)) {
+        setSearchHistory(data);
+      } else if (data.searches && Array.isArray(data.searches)) {
+        setSearchHistory(data.searches);
+      } else {
+        console.error("Unexpected data format:", data);
+        setSearchHistory([]); // ❌ Prevents setting invalid data
+      }
     } catch (error) {
-        console.error("Error fetching search history:", error);
-        Swal.fire("Error", error.message || "Something went wrong while fetching search history.", "error");
+      console.error("Error fetching search history:", error);
+      Swal.fire("Error", error.message || "Something went wrong while fetching search history.", "error");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
-
+  };
+  
   
   // Function to delete a search history entry
   const deleteSearch = async (searchId) => {
