@@ -199,25 +199,23 @@ const login_with_google = (idToken) => {
   };
 
   // Function to fetch search history
-
   const fetchSearchHistory = async () => {
     if (!user) return;
   
     setLoading(true);
     try {
-      const userId = user.id;
-      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY.replace("{user_id}", userId);
+      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY; // ✅ No need for userId
   
       const response = await fetch(searchHistoryUrl, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // ✅ Still needed for authentication
         },
       });
   
-      console.log("Response status:", response.status); // ✅ Log response status
+      console.log("Response status:", response.status); // ✅ Debugging
       const data = await response.json();
-      console.log("Full Response Data:", data); // ✅ Log full response
+      console.log("Full Response Data:", data); // ✅ Check what the API returns
   
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch search history.");
@@ -230,7 +228,7 @@ const login_with_google = (idToken) => {
         setSearchHistory(data.searches);
       } else {
         console.error("Unexpected data format:", data);
-        setSearchHistory([]); // ❌ Prevents setting invalid data
+        setSearchHistory([]); // ❌ Prevents crashes due to invalid data
       }
     } catch (error) {
       console.error("Error fetching search history:", error);
