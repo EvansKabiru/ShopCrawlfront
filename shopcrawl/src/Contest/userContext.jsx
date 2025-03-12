@@ -221,15 +221,10 @@ const login_with_google = (idToken) => {
             throw new Error(data.error || "Failed to fetch search history.");
         }
 
-        // ✅ Extract search history (Array) and ignore user data (Object)
-        if (Array.isArray(data)) {
-            setSearchHistory(data);  // ✅ Works if response is already an array
-        } else if (data.searches && Array.isArray(data.searches)) {
-            setSearchHistory(data.searches);  // ✅ Works if search history is nested inside "searches"
-        } else {
-            console.error("Unexpected response format:", data);
-            setSearchHistory([]);
-        }
+        // ✅ Extract only the search history array
+        const searchHistoryArray = Array.isArray(data) ? data : []; 
+
+        setSearchHistory(searchHistoryArray); // ✅ Ensures it's always an array
 
     } catch (error) {
         console.error("Error fetching search history:", error);
