@@ -7,7 +7,7 @@ const API_ENDPOINTS = {
   REGISTER: "https://shopcrawlbackend-2.onrender.com/register",
   FETCH_USER: "https://shopcrawlbackend-2.onrender.com/me",
   SAVE_SEARCH: "https://shopcrawlbackend-2.onrender.com/save-search",
-  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches",
+  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches/{user_id}",
   DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search/{search_id}",
 };
 
@@ -204,18 +204,19 @@ const login_with_google = (idToken) => {
   
     setLoading(true);
     try {
-      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY; // ✅ No need for userId
+      const userId = user.id;
+      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY.replace("{user_id}", userId);
   
       const response = await fetch(searchHistoryUrl, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${token}`, // ✅ Still needed for authentication
+          Authorization: `Bearer ${token}`,
         },
       });
   
-      console.log("Response status:", response.status); // ✅ Debugging
+      console.log("Response status:", response.status); // ✅ Log response status
       const data = await response.json();
-      console.log("Full Response Data:", data); // ✅ Check what the API returns
+      console.log("Full Response Data:", data); // ✅ Log full response
   
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch search history.");
@@ -228,7 +229,7 @@ const login_with_google = (idToken) => {
         setSearchHistory(data.searches);
       } else {
         console.error("Unexpected data format:", data);
-        setSearchHistory([]); // ❌ Prevents crashes due to invalid data
+        setSearchHistory([]); // ❌ Prevents setting invalid data
       }
     } catch (error) {
       console.error("Error fetching search history:", error);
@@ -237,7 +238,6 @@ const login_with_google = (idToken) => {
       setLoading(false);
     }
   };
-  
   
   // Function to delete a search history entry
   const deleteSearch = async (searchId) => {
