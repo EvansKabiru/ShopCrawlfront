@@ -214,24 +214,30 @@ const login_with_google = (idToken) => {
         },
       });
   
+      console.log("Response status:", response.status); // ✅ Log response status
       const data = await response.json();
       console.log("Full Response Data:", data); // ✅ Log full response
   
-      if (response.ok) {
-        // ✅ Fix: Extract search history correctly
-        const extractedSearchHistory = Array.isArray(data.search_history) ? data.search_history : [];
-        setSearchHistory(extractedSearchHistory);
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch search history.");
+      }
+  
+      // ✅ Ensure data is an array before setting state
+      if (Array.isArray(data)) {
+        setSearchHistory(data);
+      } else if (data.searches && Array.isArray(data.searches)) {
+        setSearchHistory(data.searches);
       } else {
-        Swal.fire("Error", data.error || "Failed to fetch search history", "error");
+        console.error("Unexpected data format:", data);
+        setSearchHistory([]); // ❌ Prevents setting invalid data
       }
     } catch (error) {
       console.error("Error fetching search history:", error);
-      Swal.fire("Error", "Something went wrong while fetching search history.", "error");
+      Swal.fire("Error", error.message || "Something went wrong while fetching search history.", "error");
     } finally {
       setLoading(false);
     }
   };
-  
   
   
   // Function to delete a search history entry
