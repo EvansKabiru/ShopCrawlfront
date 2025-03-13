@@ -52,21 +52,28 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // LOGIN WITH GOOGLE
+// GOOGLE LOGIN FUNCTION
   const login_with_google = (idToken) => {
+    if (!idToken) {
+      console.error("No ID Token received! Aborting request.");
+      return;
+    }
+  
     console.log("Google ID Token:", idToken); // Debugging
+  
     fetch("https://shopcrawlbackend-2.onrender.com/google_login/callback", {
       method: "POST",
       headers: {
-        "Content-type": "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        token: idToken,  // Ensure ID token is sent
-      }),
+      body: JSON.stringify({ token: idToken }),
     })
-      .then((resp) => resp.json())
+      .then((resp) => {
+        console.log("Response Status:", resp.status);
+        return resp.json(); // Attempt to parse response body
+      })
       .then((response) => {
-        console.log("Google Login Response:", response); // Debugging
+        console.log("Google Login Response:", response);
       })
       .catch((error) => console.error("Error in Google login:", error));
   };
