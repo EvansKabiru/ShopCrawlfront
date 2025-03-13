@@ -54,52 +54,22 @@ export const UserProvider = ({ children }) => {
 
   // LOGIN WITH GOOGLE
   const login_with_google = (idToken) => {
+    console.log("Google ID Token:", idToken); // Debugging
     fetch("https://shopcrawlbackend-2.onrender.com/google_login/callback", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
       },
       body: JSON.stringify({
-        token: idToken,  // Send the ID token here
+        token: idToken,  // Ensure ID token is sent
       }),
     })
       .then((resp) => resp.json())
       .then((response) => {
-        if (response.access_token) {
-          // ✅ Store token in localStorage (not sessionStorage)
-          localStorage.setItem("token", response.access_token);
-          setToken(response.access_token); // Update state
-  
-          // ✅ Now fetch the user data
-          fetch(API_ENDPOINTS.FETCH_USER, {
-            method: "GET",
-            headers: {
-              "Content-type": "application/json",
-              Authorization: `Bearer ${response.access_token}`,
-            },
-          })
-            .then((response) => response.json())
-            .then((response) => {
-              if (response.email) {
-                setUser(response);
-              } else {
-                Swal.fire("Error", "Could not fetch user details.", "error");
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching current user:", error);
-              Swal.fire("Error", "Failed to fetch user data.", "error");
-            });
-        } else {
-          Swal.fire("Error", "Google login failed.", "error");
-        }
+        console.log("Google Login Response:", response); // Debugging
       })
-      .catch((error) => {
-        console.error("Error in Google login:", error);
-        Swal.fire("Error", "Something went wrong during Google login.", "error");
-      });
+      .catch((error) => console.error("Error in Google login:", error));
   };
-  
   
 
   // Function to handle user registration
