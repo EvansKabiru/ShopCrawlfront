@@ -7,10 +7,12 @@ const API_ENDPOINTS = {
   REGISTER: "https://shopcrawlbackend-2.onrender.com/register",
   FETCH_USER: "https://shopcrawlbackend-2.onrender.com/me",
   SAVE_SEARCH: "https://shopcrawlbackend-2.onrender.com/save-search",
-  FETCH_SEARCH_HISTORY: `https://shopcrawlbackend-2.onrender.com/searches/${user_id}`,
-  DELETE_SEARCH: `https://shopcrawlbackend-2.onrender.com/delete-search/${search_id}`,
-};
+   // ✅ Use a function to get search history dynamically
+   FETCH_SEARCH_HISTORY: (user_id) => `https://shopcrawlbackend-2.onrender.com/searches/${user_id}`,
 
+   // ✅ Use a function to delete a search dynamically
+   DELETE_SEARCH: (search_id) => `https://shopcrawlbackend-2.onrender.com/delete-search/${search_id}`,
+ };
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
@@ -204,9 +206,8 @@ const login_with_google = (idToken) => {
   
     setLoading(true);
     try {
-      
-      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY(user.id); // ✅ Now dynamically generates the correct URL
-
+      // ✅ Now dynamically generates the correct URL
+      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY(user.id);
   
       const response = await fetch(searchHistoryUrl, {
         method: "GET",
@@ -215,26 +216,29 @@ const login_with_google = (idToken) => {
         },
       });
   
-      console.log("Response status:", response.status); // ✅ Log response status
+      console.log("Response status:", response.status);
       const data = await response.json();
-      console.log("Full Response Data:", data); // ✅ Log full response
+      console.log("Full Response Data:", data);
   
       if (!response.ok) {
         throw new Error(data.error || "Failed to fetch search history.");
       }
   
-      // ✅ Ensure data is an array before setting state
       if (Array.isArray(data)) {
         setSearchHistory(data);
       } else if (data.searches && Array.isArray(data.searches)) {
         setSearchHistory(data.searches);
       } else {
         console.error("Unexpected data format:", data);
-        setSearchHistory([]); // ❌ Prevents setting invalid data
+        setSearchHistory([]);
       }
     } catch (error) {
       console.error("Error fetching search history:", error);
-      Swal.fire("Error", error.message || "Something went wrong while fetching search history.", "error");
+      Swal.fire(
+        "Error",
+        error.message || "Something went wrong while fetching search history.",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
@@ -244,27 +248,24 @@ const login_with_google = (idToken) => {
   // Function to delete a search history entry
   const deleteSearch = async (searchId) => {
     if (!user) {
-      Swal.fire(
-        "Error",
-        "You must be logged in to delete search history",
-        "error"
-      );
+      Swal.fire("Error", "You must be logged in to delete search history", "error");
       return;
     }
-
+  
     setLoading(true);
     try {
-    const deleteUrl = API_ENDPOINTS.DELETE_SEARCH(searchId); // ✅ Now correctly injects search ID
-
-    const response = await fetch(deleteUrl, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+      // ✅ Now correctly injects search ID
+      const deleteUrl = API_ENDPOINTS.DELETE_SEARCH(searchId);
+  
+      const response = await fetch(deleteUrl, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         Swal.fire("Success", "Search history deleted!", "success");
         fetchSearchHistory(); // Refresh search history after deletion
@@ -273,15 +274,12 @@ const login_with_google = (idToken) => {
       }
     } catch (error) {
       console.error("Search delete error:", error);
-      Swal.fire(
-        "Error",
-        "Something went wrong while deleting search.",
-        "error"
-      );
+      Swal.fire("Error", "Something went wrong while deleting search.", "error");
     } finally {
       setLoading(false);
     }
   };
+  
 
   // Function to log out the user
   const logout = () => {
