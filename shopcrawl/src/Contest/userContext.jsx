@@ -8,10 +8,11 @@ const API_ENDPOINTS = {
   FETCH_USER: "https://shopcrawlbackend-2.onrender.com/me",
   SAVE_SEARCH: "https://shopcrawlbackend-2.onrender.com/save-search",
    // ✅ Use a function to get search history dynamically
-  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches",
+  FETCH_SEARCH_HISTORY: (userId) => `https://shopcrawlbackend-2.onrender.com/searches/${userId}`,
+  
 
    // ✅ Use a function to delete a search dynamically
-  DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search",
+  DELETE_SEARCH: (searchId) => `https://shopcrawlbackend-2.onrender.com/delete-search/${searchId}`,
  };
 export const UserContext = createContext();
 
@@ -202,22 +203,25 @@ const login_with_google = (idToken) => {
 
   // Function to fetch search history
   const fetchSearchHistory = async () => {
-    if (!token) return;
+    if (!token || !user || !user.id) {
+      console.warn("User ID is undefined, skipping search history fetch.");
+      return; // ✅ Exit early if user or user.id is undefined
+    }
   
     setLoading(true);
     try {
-      const response = await fetch(API_ENDPOINTS.FETCH_SEARCH_HISTORY, {
+      const response = await fetch(API_ENDPOINTS.FETCH_SEARCH_HISTORY(user.id), {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`, // ✅ Token authentication
         },
       });
   
-      const data = await response.json();
-  
       if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch search history.");
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+  
+      const data = await response.json();
   
       // ✅ Ensure data is an array before setting state
       if (Array.isArray(data)) {
@@ -241,17 +245,16 @@ const login_with_google = (idToken) => {
   };
   
   
-  
   // Function to delete a search history entry
   const deleteSearch = async (searchId) => {
     if (!token) return;
   
     setLoading(true);
     try {
-      const response = await fetch(`${API_ENDPOINTS.DELETE_SEARCH}/${searchId}`, {
+      const response = await fetch(API_ENDPOINTS.DELETE_SEARCH(searchId), { // ✅ FIXED THIS LINE
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`, // ✅ Token authentication
+          Authorization: `Bearer ${token}`,
         },
       });
   
@@ -265,11 +268,7 @@ const login_with_google = (idToken) => {
       }
     } catch (error) {
       console.error("Search delete error:", error);
-      Swal.fire(
-        "Error",
-        "Something went wrong while deleting search.",
-        "error"
-      );
+      Swal.fire("Error", "Something went wrong while deleting search.", "error");
     } finally {
       setLoading(false);
     }
