@@ -9,7 +9,6 @@ const History = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  
   // Fetch search history from the backend
   const fetchSearchHistory = async () => {
     setLoading(true);
@@ -34,7 +33,15 @@ const History = () => {
         throw new Error(data.error || "Failed to fetch search history.");
       }
 
-      setSearchHistory(data);
+      // Ensure data is an array before setting state
+      if (Array.isArray(data)) {
+        setSearchHistory(data); // Direct array
+      } else if (data.searches && Array.isArray(data.searches)) {
+        setSearchHistory(data.searches); // Nested array
+      } else {
+        console.error("Unexpected data format:", data);
+        setSearchHistory([]); // Fallback to empty array
+      }
     } catch (error) {
       setError(error.message);
       console.error("Error fetching search history:", error);
@@ -43,7 +50,7 @@ const History = () => {
     }
   };
 
-  //Now, useEffect has access to fetchSearchHistory
+  // Fetch search history when the user is available
   useEffect(() => {
     if (user) {
       fetchSearchHistory();
@@ -92,7 +99,9 @@ const History = () => {
 
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-      {searchHistory.length === 0 ? (
+      {!Array.isArray(searchHistory) ? (
+        <p className="text-gray-600 text-center">Invalid search history data.</p>
+      ) : searchHistory.length === 0 ? (
         <p className="text-gray-600 text-center">No search history found.</p>
       ) : (
         <ul className="list-disc pl-5">
