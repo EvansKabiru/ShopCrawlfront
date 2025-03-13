@@ -8,10 +8,10 @@ const API_ENDPOINTS = {
   FETCH_USER: "https://shopcrawlbackend-2.onrender.com/me",
   SAVE_SEARCH: "https://shopcrawlbackend-2.onrender.com/save-search",
    // ✅ Use a function to get search history dynamically
-   FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches",
+  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches",
 
    // ✅ Use a function to delete a search dynamically
-   DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search",
+  DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search",
  };
 export const UserContext = createContext();
 

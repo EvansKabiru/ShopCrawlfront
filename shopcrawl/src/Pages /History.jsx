@@ -16,7 +16,7 @@ const History = () => {
 
     try {
       const response = await fetch(
-        `https://shopcrawlbackend-2.onrender.com/${user.id}`,
+        "https://shopcrawlbackend-2.onrender.com/searches",
         {
           method: "GET",
           headers: {
