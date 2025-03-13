@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import jwtDecode from "jwt-decode"; // Ensure you have jwt-decode installed
+
 
 // API Endpoints (Centralized for easy maintenance)
 const API_ENDPOINTS = {
@@ -53,29 +55,38 @@ export const UserProvider = ({ children }) => {
   };
 
 // GOOGLE LOGIN FUNCTION
-const login_with_google = (response) => {
-  if (response.credential) {
-      const idToken = response.credential; // This is the actual JWT token
-      console.log("Google ID Token:", idToken); // Should be a long JWT string
+const login_with_google = async (response) => {
+  if (!response.credential) {
+    console.error("Google login failed: No credential received.");
+    return;
+  }
 
-      // Send the token to the backend
-      fetch("https://shopcrawlbackend-2.onrender.com/google_login/callback", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ token: idToken }), // Send the correct token
-      })
-      .then((resp) => {
-          if (!resp.ok) {
-              throw new Error(`HTTP error! Status: ${resp.status}`);
-          }
-          return resp.json();
-      })
-      .then((data) => console.log("Google Login Response:", data))
-      .catch((error) => console.error("Error in Google login:", error));
-  } else {
-      console.error("Google login failed: No credential received.");
+  const idToken = response.credential;
+  console.log("Google ID Token:", idToken);
+
+  try {
+    const decoded = jwtDecode(idToken);
+    if (!decoded.email) throw new Error("Invalid Google token: No email found");
+
+    const resp = await fetch("https://shopcrawlbackend-2.onrender.com/google_login/callback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: idToken }),
+    });
+
+    if (!resp.ok) {
+      const errorData = await resp.json();
+      throw new Error(errorData.message || `HTTP error! Status: ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    console.log("Google Login Response:", data);
+
+    setUser({ email: decoded.email, ...data });
+    Swal.fire("Success", "Google Login Successful!", "success");
+  } catch (error) {
+    console.error("Google login error:", error.message);
+    Swal.fire("Error", error.message || "Google login failed", "error");
   }
 };
 
