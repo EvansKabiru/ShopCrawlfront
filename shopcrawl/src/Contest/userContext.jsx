@@ -7,8 +7,8 @@ const API_ENDPOINTS = {
   REGISTER: "https://shopcrawlbackend-2.onrender.com/register",
   FETCH_USER: "https://shopcrawlbackend-2.onrender.com/me",
   SAVE_SEARCH: "https://shopcrawlbackend-2.onrender.com/save-search",
-  FETCH_SEARCH_HISTORY: "https://shopcrawlbackend-2.onrender.com/searches/{user_id}",
-  DELETE_SEARCH: "https://shopcrawlbackend-2.onrender.com/delete-search/{search_id}",
+  FETCH_SEARCH_HISTORY: `https://shopcrawlbackend-2.onrender.com/searches/${user_id}`,
+  DELETE_SEARCH: `https://shopcrawlbackend-2.onrender.com/delete-search/${search_id}`,
 };
 
 export const UserContext = createContext();
@@ -204,8 +204,9 @@ const login_with_google = (idToken) => {
   
     setLoading(true);
     try {
-      const userId = user.id;
-      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY.replace("{user_id}", userId);
+      
+      const searchHistoryUrl = API_ENDPOINTS.FETCH_SEARCH_HISTORY(user.id); // ✅ Now dynamically generates the correct URL
+
   
       const response = await fetch(searchHistoryUrl, {
         method: "GET",
@@ -253,7 +254,7 @@ const login_with_google = (idToken) => {
 
     setLoading(true);
     try {
-    const deleteUrl = API_ENDPOINTS.DELETE_SEARCH.replace("{search_id}", searchId);
+    const deleteUrl = API_ENDPOINTS.DELETE_SEARCH(searchId); // ✅ Now correctly injects search ID
 
     const response = await fetch(deleteUrl, {
       method: "DELETE",
