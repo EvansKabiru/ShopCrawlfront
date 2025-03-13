@@ -53,31 +53,32 @@ export const UserProvider = ({ children }) => {
   };
 
 // GOOGLE LOGIN FUNCTION
-  const login_with_google = (idToken) => {
-    if (!idToken) {
-      console.error("No ID Token received! Aborting request.");
-      return;
-    }
-  
-    console.log("Google ID Token:", idToken); // Debugging
-  
-    fetch("https://shopcrawlbackend-2.onrender.com/google_login/callback", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ token: idToken }),
-    })
+const login_with_google = (response) => {
+  if (response.credential) {
+      const idToken = response.credential; // This is the actual JWT token
+      console.log("Google ID Token:", idToken); // Should be a long JWT string
+
+      // Send the token to the backend
+      fetch("https://shopcrawlbackend-2.onrender.com/google_login/callback", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: idToken }), // Send the correct token
+      })
       .then((resp) => {
-        console.log("Response Status:", resp.status);
-        return resp.json(); // Attempt to parse response body
+          if (!resp.ok) {
+              throw new Error(`HTTP error! Status: ${resp.status}`);
+          }
+          return resp.json();
       })
-      .then((response) => {
-        console.log("Google Login Response:", response);
-      })
+      .then((data) => console.log("Google Login Response:", data))
       .catch((error) => console.error("Error in Google login:", error));
-  };
-  
+  } else {
+      console.error("Google login failed: No credential received.");
+  }
+};
+
 
   // Function to handle user registration
   const register = async (userData) => {
